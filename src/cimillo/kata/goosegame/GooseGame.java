@@ -25,6 +25,7 @@ public class GooseGame {
 			GooseGame game = new GooseGame(gameInput);
 			game.letsPlay();
 		}
+		System.exit(0);
 
 	}
 
@@ -40,9 +41,11 @@ public class GooseGame {
 	 */
 	private List<Player> playersList;
 
-	public GooseGame(Scanner gameInput2) {
-		this.gameInput = gameInput2;
-		board = new Board();
+	private boolean thereIsAWinner = false;
+
+	public GooseGame(Scanner gameInput) {
+		this.gameInput = gameInput;
+		board = new Board(this);
 		playersList = new ArrayList<Player>();
 	}
 
@@ -81,6 +84,10 @@ public class GooseGame {
 		return !existPlayer;
 	}
 
+	public List<Player> getPlayersList() {
+		return playersList;
+	}
+
 	/**
 	 * Access point to start a set of the game
 	 * 
@@ -96,35 +103,39 @@ public class GooseGame {
 			} catch (InputMismatchException e) {
 				gameInput.nextLine();
 				System.out.println("Insert a valid number");
-
 			}
 		}
-		gameInput.nextLine(); // to consume the enter after the number for the subsequent nextLine
+		gameInput.nextLine();
 		addPlayers(playersNumber);
 		makesMoves(playersNumber);
 		return null;
 	}
 
 	private void makesMoves(int playersNumber) {
-		for (int i = 0; i < playersNumber; i++) {
+		int i = 0;
+
+		while (!thereIsAWinner && i <= playersNumber) {
 			Player currentPlayer = playersList.get(i);
 			System.out.println("\n" + currentPlayer.getName() + " press Enter to play!");
 			gameInput.nextLine();
 			System.out.println("\t" + currentPlayer.getName() + " thows dice...");
+
+//			Player throws dice
 			int[] score = throwDice();
 			System.out.println(
 					"* " + currentPlayer.getName() + " * gets " + score[0] + ", " + score[1] + " at the dice!");
-			currentPlayer.advance(score[0] + score[1]);
-			System.out.println(currentPlayer.playerStateDescription());
 
-			// Move player on the board
-			String msgFromBoard = board.movePlayers(currentPlayer);
-			if (!msgFromBoard.isEmpty()) {
-				System.out.println(msgFromBoard);
-			}
+//			Move player on the board
+			String msgFromBoard = board.movePlayer(currentPlayer, score[0] + score[1]);
+			System.out.println(msgFromBoard);
 
 			System.out.println("********************************************");
+			i = i == playersNumber - 1 ? 0 : i + 1;
 		}
+	}
+
+	public void setThereIsAWinner(Boolean thereIsAWinner) {
+		this.thereIsAWinner = thereIsAWinner;
 	}
 
 	private int[] throwDice() {

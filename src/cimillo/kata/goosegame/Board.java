@@ -7,18 +7,27 @@ package cimillo.kata.goosegame;
  */
 public class Board {
 
+	/**
+	 * @author Giovanna
+	 *
+	 *         This Enum represent the various types of boxes on the board;
+	 */
 	private enum BoxType {
 		BRIDGE, GOOSE, STANDARD, VICTORY;
 
+		/**
+		 * @param position
+		 * @return the type of the box at the specified position
+		 */
 		private static BoxType getBoxType(int position) {
+			if (position == LAST_POSITION) {
+				return VICTORY;
+			}
 			if (position == 6) {
 				return BRIDGE;
 			}
 			if (position != 0 && (position % 9 == 5 || position % 9 == 0)) {
 				return GOOSE;
-			}
-			if (position == LAST_POSITION) {
-				return VICTORY;
 			}
 			return STANDARD;
 		}
@@ -34,7 +43,7 @@ public class Board {
 	/**
 	 * Constant indicating the last box on the board
 	 */
-	private final static int LAST_POSITION = 63;
+	final static int LAST_POSITION = 63;
 
 	/**
 	 * boxes represents the state of the boxes that make up the board.
@@ -47,37 +56,58 @@ public class Board {
 	 */
 	private Player[] boxes;
 
-	public Board() {
-		super();
-		boxes = new Player[LAST_POSITION];
+	/**
+	 * Reference to the game of the board
+	 */
+	private GooseGame gooseGame;
+
+	public Board(GooseGame gooseGame) {
+		this.gooseGame = gooseGame;
+		boxes = new Player[LAST_POSITION + 1]; // The board has a box 0 for "Start"
 	}
 
-	String movePlayers(Player playerWithDice) {
+	String movePlayer(Player playerWithDice, int score) {
 
+		int previousPositionCurrentPlayer = playerWithDice.getPosition();
+		playerWithDice.move(score);
+		boolean existSomeoneElse = gooseGame.getPlayersList().stream()
+				.anyMatch(p -> playerWithDice.getPreviousPosition() != 0
+						&& !p.getName().equalsIgnoreCase(playerWithDice.getName())
+						&& p.getPosition() == playerWithDice.getPreviousPosition());
+		if (!existSomeoneElse) { // in case of subsequent jokes
+			boxes[playerWithDice.getPreviousPosition()] = null;
+		}
 		String msg = "";
-		int positionCurrentPlayer = playerWithDice.getPosition();
 
-		if (positionCurrentPlayer > LAST_POSITION) {
-			// TODO;
-			return "Vittoria";
-		}
-		Player oldPlayerInPosition = boxes[positionCurrentPlayer];
-
-		if (positionCurrentPlayer != 0) {
-			boxes[positionCurrentPlayer] = playerWithDice;
+		int newPositionCurrentPlayer = playerWithDice.getPosition();
+		if (previousPositionCurrentPlayer != newPositionCurrentPlayer) {
+			msg += playerWithDice.playerStateDescription();
 		}
 
-		switch (BoxType.getBoxType(positionCurrentPlayer)) {
+		if (BoxType.getBoxType(newPositionCurrentPlayer) == BoxType.VICTORY) {
+			gooseGame.setThereIsAWinner(true);
+			return msg + "\n\t:) WOW! :)\n " + playerWithDice.getName() + " YOU WIN! :)\n";
+		}
+		if (previousPositionCurrentPlayer + score > LAST_POSITION) {
+			newPositionCurrentPlayer = previousPositionCurrentPlayer + 1;
+			msg += playerWithDice.playerStateDescription() + "\n* " + playerWithDice.getName() + " *  bounces!\n"
+					+ playerWithDice.getName() + " goes back to " + playerWithDice.getPosition() + " on the board!";
+			msg += movePlayer(playerWithDice, 1);
+		}
+
+		Player oldPlayerInPosition = boxes[newPositionCurrentPlayer];
+		if (newPositionCurrentPlayer != 0) {
+			boxes[newPositionCurrentPlayer] = playerWithDice;
+		}
+
+		switch (BoxType.getBoxType(newPositionCurrentPlayer)) {
 		case BRIDGE:
-			playerWithDice.advance(BRIDGE_JUMP_POSITION - positionCurrentPlayer);
-			msg += "\n\tWOW!\n " + playerWithDice.getName() + " You happened upon the bridge!\n"
-					+ playerWithDice.playerStateDescription();
+			msg += "\n\tWOW!\n " + playerWithDice.getName() + " You happened upon the bridge!\n";
+			msg += movePlayer(playerWithDice, BRIDGE_JUMP_POSITION - newPositionCurrentPlayer);
 			break;
 		case GOOSE:
-			playerWithDice.advance(positionCurrentPlayer - playerWithDice.getPreviousPosition());
-			msg += "\n\tWOW!\n " + playerWithDice.getName() + " You catch a goose!\n"
-					+ playerWithDice.playerStateDescription();
-			movePlayers(playerWithDice);
+			msg += "\n\tWOW!\n " + playerWithDice.getName() + " You catch a goose!\n";
+			msg += movePlayer(playerWithDice, newPositionCurrentPlayer - playerWithDice.getPreviousPosition());
 			break;
 
 		default:
@@ -85,14 +115,11 @@ public class Board {
 		}
 
 		if (oldPlayerInPosition != null) {
+			msg += "\n\tATTENTION!\n" + oldPlayerInPosition.getName() + " falls in the joke!\n";
+			int joke = newPositionCurrentPlayer - playerWithDice.getPreviousPosition();
 
-			msg += "\n\tATTENTION!\n" + oldPlayerInPosition.getName() + " falls in the first joke!\n";
-			oldPlayerInPosition.advance(-1
-					* (playerWithDice.getPosition() - (playerWithDice.getPreviousPosition() - positionCurrentPlayer)));
-			msg += oldPlayerInPosition.playerStateDescription();
-			msg += movePlayers(oldPlayerInPosition);
+			msg += movePlayer(oldPlayerInPosition, -joke);
 		}
-
 		return msg;
 
 	}

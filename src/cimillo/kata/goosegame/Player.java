@@ -1,33 +1,43 @@
 package cimillo.kata.goosegame;
 
+/**
+ * @author Giovanna
+ *
+ *         Class representing the players
+ */
 public class Player {
 
 	private String name;
 
-	private Integer position = 0;
-	private Integer previousPosition;
+	private int position = 0;
+	private int previousPosition;
 
 	public Player(String name) {
 		super();
 		this.name = name;
 	}
 
-	void advance(int score) {
-		previousPosition = position;
-		int temp = position + score;
-		position = temp >= 0 ? temp : 0;
-	}
-
 	public String getName() {
 		return name;
 	}
 
-	public Integer getPosition() {
+	public int getPosition() {
 		return position;
 	}
 
-	public Integer getPreviousPosition() {
+	public int getPreviousPosition() {
 		return previousPosition;
+	}
+
+	/**
+	 * @param score - the sum to use to update the player's position
+	 */
+	void move(int score) {
+		int temp = position + score;
+		if (temp <= Board.LAST_POSITION) {
+			previousPosition = position;
+			position = temp >= 0 ? temp : 0;
+		}
 	}
 
 	String playerStateDescription() {
@@ -39,7 +49,7 @@ public class Player {
 		this.name = name;
 	}
 
-	public void setPosition(Integer position) {
+	public void setPosition(int position) {
 		this.position = position;
 	}
 
