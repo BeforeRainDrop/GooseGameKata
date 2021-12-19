@@ -1,6 +1,7 @@
 package cimillo.kata.goosegame;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -49,7 +50,7 @@ public class GooseGame {
 		for (int i = 1; i < playersNumber + 1; i++) {
 			boolean validName = false;
 			while (!validName) {
-				System.out.println("Player " + i + " enter your name:");
+				System.out.println("\nPlayer " + i + " enter your name:");
 				String playerName = gameInput.nextLine();
 				if (playerName.trim().isEmpty()) {
 					System.out.println("Player " + i + " please enter a not empty name.");
@@ -87,9 +88,17 @@ public class GooseGame {
 	 */
 	private Player letsPlay() {
 		System.out.println("The game begins...\n");
-		int playersNumber;
-		System.out.println("How many players? ");
-		playersNumber = gameInput.nextInt();
+		int playersNumber = 0;
+		while (playersNumber == 0) {
+			System.out.println("How many players? ");
+			try {
+				playersNumber = gameInput.nextInt();
+			} catch (InputMismatchException e) {
+				gameInput.nextLine();
+				System.out.println("Insert a valid number");
+
+			}
+		}
 		gameInput.nextLine(); // to consume the enter after the number for the subsequent nextLine
 		addPlayers(playersNumber);
 		makesMoves(playersNumber);
@@ -106,8 +115,9 @@ public class GooseGame {
 			System.out.println(
 					"* " + currentPlayer.getName() + " * gets " + score[0] + ", " + score[1] + " at the dice!");
 			currentPlayer.advance(score[0] + score[1]);
-			System.out.println(Board.playerStateDescription(currentPlayer));
+			System.out.println(currentPlayer.playerStateDescription());
 
+			// Move player on the board
 			String msgFromBoard = board.movePlayers(currentPlayer);
 			if (!msgFromBoard.isEmpty()) {
 				System.out.println(msgFromBoard);

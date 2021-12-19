@@ -14,7 +14,8 @@ public class Player {
 
 	void advance(int score) {
 		previousPosition = position;
-		position += score;
+		int temp = position + score;
+		position = temp >= 0 ? temp : 0;
 	}
 
 	public String getName() {
@@ -27,6 +28,11 @@ public class Player {
 
 	public Integer getPreviousPosition() {
 		return previousPosition;
+	}
+
+	String playerStateDescription() {
+		return "\n* " + this.getName() + " * moves from " + this.getPreviousPosition() + " to " + this.getPosition()
+				+ " on the board!";
 	}
 
 	public void setName(String name) {
