@@ -1,8 +1,5 @@
 package cimillo.kata.goosegame;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Giovanna
  *
@@ -15,25 +12,42 @@ public class Board {
 	 */
 	private final static int LAST_POSITION = 63;
 
-	/**
-	 * box represents the state of a box on the board.
-	 * 
-	 * true -> the box is currently occupied by one player;
-	 * 
-	 * false -> the box is free
-	 */
-	private boolean[] box;
+	static String playerStateDescription(Player currentPlayer) {
+		return "\n* " + currentPlayer.getName() + " * moves from " + currentPlayer.getPreviousPosition() + " to "
+				+ currentPlayer.getPosition() + " on the board!";
+	}
 
 	/**
-	 * positions is a representation of current positioning of the players on the
-	 * board
+	 * boxes represents the state of the boxes that make up the board.
+	 * 
+	 * boxes[p] : null -> the box in position p is free
+	 * 
+	 * not null - boxes [p] contains player P -> the box is currently occupied by
+	 * the instance P of Player class;
+	 * 
 	 */
-	private Map<Integer, Player> positions;
+	private Player[] boxes;
 
 	public Board() {
 		super();
-		box = new boolean[LAST_POSITION];
-		positions = new HashMap<Integer, Player>();
+		boxes = new Player[LAST_POSITION];
+	}
+
+	String movePlayers(Player playerWithDice) {
+
+		String msg = "";
+
+		int positionCurrentPlayer = playerWithDice.getPosition();
+
+		if (boxes[positionCurrentPlayer] != null) {
+			Player oldPlayerInPosition = boxes[positionCurrentPlayer];
+			msg = "\tATTENTION!\n" + oldPlayerInPosition.getName() + " falls in the first joke!\n";
+			oldPlayerInPosition.advance(playerWithDice.getPreviousPosition() - positionCurrentPlayer);
+			msg += playerStateDescription(oldPlayerInPosition);
+		}
+		boxes[positionCurrentPlayer] = playerWithDice;
+		return msg;
+
 	}
 
 }

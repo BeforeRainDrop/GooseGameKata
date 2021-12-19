@@ -1,8 +1,8 @@
 package cimillo.kata.goosegame;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -13,78 +13,59 @@ import java.util.stream.Collectors;
  */
 public class GooseGame {
 
-	/**
-	 * Access point to start a set of the game
-	 * 
-	 * @return the player winning the game
-	 */
-	private static Player letsPlay() {
-		System.out.println("The game begins...\n");
-		GooseGame game = new GooseGame();
-
-		try (Scanner gameInput = new Scanner(System.in)) {
-			int playersNumber;
-			System.out.println("How many players? ");
-			playersNumber = gameInput.nextInt();
-			game.addPlayers(playersNumber);
-
-		}
-		return null;
-	}
-
 	public static void main(String[] args) {
 
 		System.out.println("****************************************");
 		System.out.println("\tWelcome to Goose Game!");
 		System.out.println("****************************************");
 		System.out.println("Press Enter to continue ");
-		try {
-			System.in.read();
-			letsPlay();
-		} catch (IOException e) {
-			System.out.println("Sorry, something has gone wrong.");
+		try (Scanner gameInput = new Scanner(System.in)) {
+			gameInput.nextLine();
+			GooseGame game = new GooseGame(gameInput);
+			game.letsPlay();
 		}
 
 	}
-
-	/**
-	 * Game participants
-	 */
-	private List<Player> playersList;
 
 	/**
 	 * Board on which the game takes place
 	 */
 	private Board board;
 
-	public GooseGame() {
+	private Scanner gameInput = null;
+
+	/**
+	 * Game participants
+	 */
+	private List<Player> playersList;
+
+	public GooseGame(Scanner gameInput2) {
+		this.gameInput = gameInput2;
 		board = new Board();
 		playersList = new ArrayList<Player>();
 	}
 
 	private void addPlayers(int playersNumber) {
-		try (Scanner gameInput = new Scanner(System.in)) {
-			for (int i = 1; i < playersNumber + 1; i++) {
-				boolean validName = false;
-				while (!validName) {
-					System.out.println("Player " + i + " enter your name: ");
-					String playerName = gameInput.nextLine();
+		for (int i = 1; i < playersNumber + 1; i++) {
+			boolean validName = false;
+			while (!validName) {
+				System.out.println("Player " + i + " enter your name:");
+				String playerName = gameInput.nextLine();
+				if (playerName.trim().isEmpty()) {
+					System.out.println("Player " + i + " please enter a not empty name.");
+				} else {
+					validName = checkParticipant(playerName) || validName;
+					if (validName) {
+						playersList.add(new Player(playerName));
 
-					if (playerName == null || playerName.trim().isEmpty()) {
-						System.out.println("Player " + i + " please enter a not empty name.");
-					} else {
-						validName = checkParticipant(playerName) || validName;
-						if (validName) {
-							playersList.add(new Player(playerName));
-
-							String currentPlayers = playersList.stream().map(Player::getName)
-									.collect(Collectors.joining(", "));
-							System.out.println("Players: " + currentPlayers);
-						}
+						String currentPlayers = playersList.stream().map(Player::getName)
+								.collect(Collectors.joining(", "));
+						System.out.println("\nPlayers: " + currentPlayers);
 					}
 				}
 			}
 		}
+		System.out.println("********************************************");
 	}
 
 	/**
@@ -97,6 +78,52 @@ public class GooseGame {
 			System.out.println(playerName + ": player already present");
 		}
 		return !existPlayer;
+	}
+
+	/**
+	 * Access point to start a set of the game
+	 * 
+	 * @return the player winning the game
+	 */
+	private Player letsPlay() {
+		System.out.println("The game begins...\n");
+		int playersNumber;
+		System.out.println("How many players? ");
+		playersNumber = gameInput.nextInt();
+		gameInput.nextLine(); // to consume the enter after the number for the subsequent nextLine
+		addPlayers(playersNumber);
+		makesMoves(playersNumber);
+		return null;
+	}
+
+	private void makesMoves(int playersNumber) {
+		for (int i = 0; i < playersNumber; i++) {
+			Player currentPlayer = playersList.get(i);
+			System.out.println("\n" + currentPlayer.getName() + " press Enter to play!");
+			gameInput.nextLine();
+			System.out.println("\t" + currentPlayer.getName() + " thows dice...");
+			int[] score = throwDice();
+			System.out.println(
+					"* " + currentPlayer.getName() + " * gets " + score[0] + ", " + score[1] + " at the dice!");
+			currentPlayer.advance(score[0] + score[1]);
+			System.out.println(Board.playerStateDescription(currentPlayer));
+
+			String msgFromBoard = board.movePlayers(currentPlayer);
+			if (!msgFromBoard.isEmpty()) {
+				System.out.println(msgFromBoard);
+			}
+
+			System.out.println("********************************************");
+		}
+	}
+
+	private int[] throwDice() {
+		int dice[] = new int[2];
+		int minScore = 1;
+		int maxScore = 6;
+		dice[0] = new Random().nextInt(maxScore - minScore) + minScore;
+		dice[1] = new Random().nextInt(maxScore - minScore) + minScore;
+		return dice;
 	}
 
 }
