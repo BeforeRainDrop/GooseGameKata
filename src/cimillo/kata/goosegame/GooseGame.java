@@ -58,7 +58,7 @@ public class GooseGame {
 				if (playerName.trim().isEmpty()) {
 					System.out.println("Player " + i + " please enter a not empty name.");
 				} else {
-					validName = checkParticipant(playerName) || validName;
+					validName = checkParticipantName(playerName) || validName;
 					if (validName) {
 						playersList.add(new Player(playerName));
 
@@ -76,10 +76,10 @@ public class GooseGame {
 	 * @param playerName
 	 * @return true if the player name is unique in the current state of the game
 	 */
-	private boolean checkParticipant(String playerName) {
+	private boolean checkParticipantName(String playerName) {
 		boolean existPlayer = playersList.stream().anyMatch(p -> p.getName().equalsIgnoreCase(playerName));
 		if (existPlayer) {
-			System.out.println(playerName + ": player already present");
+			System.out.println(playerName + ": player already present\n");
 		}
 		return !existPlayer;
 	}
@@ -89,11 +89,10 @@ public class GooseGame {
 	}
 
 	/**
-	 * Access point to start a set of the game
+	 * Access point to start a game
 	 * 
-	 * @return the player winning the game
 	 */
-	private Player letsPlay() {
+	private void letsPlay() {
 		System.out.println("The game begins...\n");
 		int playersNumber = 0;
 		while (playersNumber == 0) {
@@ -108,7 +107,6 @@ public class GooseGame {
 		gameInput.nextLine();
 		addPlayers(playersNumber);
 		makesMoves(playersNumber);
-		return null;
 	}
 
 	private void makesMoves(int playersNumber) {

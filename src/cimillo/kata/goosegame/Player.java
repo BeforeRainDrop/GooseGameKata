@@ -3,7 +3,7 @@ package cimillo.kata.goosegame;
 /**
  * @author Giovanna
  *
- *         Class representing the players
+ *         Class representing a player in the game
  */
 public class Player {
 
@@ -30,7 +30,7 @@ public class Player {
 	}
 
 	/**
-	 * @param score - the sum to use to update the player's position
+	 * @param score - the sum to use to update the player's positions
 	 */
 	void move(int score) {
 		int temp = position + score;
