@@ -1,23 +1,27 @@
 # GooseGameKata
-A personal solution of Giovanna Cimillo for "The Goose Game Kata", which requirements and description you can find at https://github.com/xpeppers/goose-game-kata
+A personal solution by Giovanna Cimillo for "The Goose Game Kata", which requirements and description you can find at https://github.com/xpeppers/goose-game-kata
 
-The project requires Java 8 or higher.
+ - The project requires Java 8 or higher.
+ 
+ 
 
-To compile, go in the directory where the src directory is located and execute the instruction:
+ - To compile with command line, 
+go in the directory where the src directory is located and execute the instruction:
 
 > javac src/cimillo/kata/goosegame/*.java
 
-Then you can execute by typing:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Then you can execute by typing:
 
 > java -cp ./src cimillo/kata/goosegame/GooseGame
 
 
-To run in Eclipse IDE you can create a Run Configuration by setting:
+ - To run in Eclipse IDE you can create a Run Configuration by setting:
 
-Project: GooseGameKata
-Main class: cimillo.kata.goosegame.GooseGame
+>Project: GooseGameKata
 
-Running this configuration You can view the game in action.
+>Main class: cimillo.kata.goosegame.GooseGame
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Running this configuration You can view the game in action.
 
 
 
