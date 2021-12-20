@@ -74,7 +74,7 @@ public class Board {
 	 * Reference to the game of the board; is used to handle the victory event
 	 * 
 	 */
-	private GooseGame gooseGame;
+	private final GooseGame gooseGame;
 
 	public Board(GooseGame gooseGame) {
 		this.gooseGame = gooseGame;
@@ -149,7 +149,7 @@ public class Board {
 //			In this case the player fallen in joke is bounced to start,
 //			so we can avoid infinite cycles
 			if (BoxType.isSpecial(jokePosition)) {
-				msg += "\n\tSorry! :(\nThe joke is seurious." + " bounces to \"Start\"!";
+				msg += "\n\tSorry! :(\nThe joke is seurious." + oldPlayerInPosition.getName() +" bounces to \"Start\"!";
 				msg += movePlayer(oldPlayerInPosition, -oldPlayerInPosition.getPosition());
 			} else {
 				msg += movePlayer(oldPlayerInPosition, -joke);

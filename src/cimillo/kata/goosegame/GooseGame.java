@@ -13,6 +13,20 @@ import java.util.stream.Collectors;
  *         Main class for the "Goose Game"
  */
 public class GooseGame {
+	
+	/**
+	 * Board on which the game takes place
+	 */
+	private final Board board;
+
+	private Scanner gameInput = null;
+
+	/**
+	 * Game participants
+	 */
+	private final List<Player> playersList;
+
+	private boolean thereIsAWinner = false;
 
 	public static void main(String[] args) {
 
@@ -28,20 +42,6 @@ public class GooseGame {
 		System.exit(0);
 
 	}
-
-	/**
-	 * Board on which the game takes place
-	 */
-	private Board board;
-
-	private Scanner gameInput = null;
-
-	/**
-	 * Game participants
-	 */
-	private List<Player> playersList;
-
-	private boolean thereIsAWinner = false;
 
 	public GooseGame(Scanner gameInput) {
 		this.gameInput = gameInput;

@@ -7,14 +7,14 @@ package cimillo.kata.goosegame;
  */
 public class Player {
 
-	static String positionsDescription(Player subject, int previousPosition, int newPosition) {
-		return "\n* " + subject.getName() + " * moves from " + previousPosition + " to " + newPosition + " on the board!";
-	}
-
 	private String name;
 	private int position = 0;
 	private int previousPosition;
 
+	static String positionsDescription(Player subject, int previousPosition, int newPosition) {
+		return "\n* " + subject.getName() + " * moves from " + previousPosition + " to " + newPosition + " on the board!";
+	}
+	
 	public Player(String name) {
 		super();
 		this.name = name;
