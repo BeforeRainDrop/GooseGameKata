@@ -88,6 +88,10 @@ public class GooseGame {
 		return playersList;
 	}
 
+	public boolean isThereAWinner() {
+		return thereIsAWinner;
+	}
+
 	/**
 	 * Access point to start a game
 	 * 

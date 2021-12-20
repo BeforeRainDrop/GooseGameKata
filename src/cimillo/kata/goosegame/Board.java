@@ -82,52 +82,52 @@ public class Board {
 	}
 
 	/**
-	 * @param playerWithDice: player object of the move to be made
-	 * @param score:          sum of dice scores or number of positions for the move
-	 *                        to be made
+	 * @param movingPlayer: player object of the move to be made
+	 * @param score:        sum of dice scores or number of positions for the move
+	 *                      to be made
 	 * @return game-dependent messages
 	 */
-	String movePlayer(Player playerWithDice, int score) {
-
-		int positionBeforeMove = playerWithDice.getPosition();
-		playerWithDice.move(score);
-//		In case of subsequent jokes we cannot free the previous position (set null to previous)
-		boolean existSomeoneElse = gooseGame.getPlayersList().stream()
-				.anyMatch(p -> playerWithDice.getPreviousPosition() != 0
-						&& !p.getName().equalsIgnoreCase(playerWithDice.getName())
-						&& p.getPosition() == playerWithDice.getPreviousPosition());
-		if (!existSomeoneElse) {
-			boxes[playerWithDice.getPreviousPosition()] = null;
-		}
+	String movePlayer(Player movingPlayer, int score) {
 
 		String msg = "";
-		int newPosition = playerWithDice.getPosition();
-		if (positionBeforeMove != newPosition) {
-			msg += playerWithDice.playerStateDescription();
-		}
+		int positionBeforeMove = movingPlayer.getPosition();
+		int newPosition = positionBeforeMove + score;
 
-		if (BoxType.getBoxType(newPosition) == BoxType.VICTORY) {
-			gooseGame.setThereIsAWinner(true);
-			return msg + "\n\t:) WOW! :)\n " + playerWithDice.getName() + " YOU WIN! :)\n";
-		}
-
-//		handle the bounce when player goes beyond the last position
-		if (positionBeforeMove + score > LAST_POSITION) {
+		// handle the bounce when player goes beyond the last position
+		boolean moveBeyondLimit = newPosition > LAST_POSITION;
+		if (moveBeyondLimit) {
+			msg += Player.positionsDescription(movingPlayer, positionBeforeMove, newPosition);
 			newPosition = positionBeforeMove + 1;
-			msg += playerWithDice.playerStateDescription() + "\n* " + playerWithDice.getName() + " *  bounces!\n"
-					+ playerWithDice.getName() + " goes back to " + playerWithDice.getPosition() + " on the board!";
-			msg += movePlayer(playerWithDice, 1);
+			msg += "\n* " + movingPlayer.getName() + " *  bounces!\n\t" + movingPlayer.getName() + " goes back to "
+					+ newPosition + " on the board!";
+			return msg + movePlayer(movingPlayer, 1);
+		} else {
+			movingPlayer.move(score);
+		}
+//		In case of subsequent jokes we cannot free the previous position (set null to previous)
+		boolean existSomeoneElse = gooseGame.getPlayersList().stream().anyMatch(p -> positionBeforeMove != 0
+				&& p.getPosition() == positionBeforeMove && !p.getName().equalsIgnoreCase(movingPlayer.getName()));
+		if (!existSomeoneElse) {
+			boxes[positionBeforeMove] = null;
+		}
+
+		newPosition = movingPlayer.getPosition();
+		msg += movingPlayer.playerStateDescription();
+
+		if (BoxType.getBoxType(newPosition) == BoxType.VICTORY && !gooseGame.isThereAWinner()) {
+			gooseGame.setThereIsAWinner(true);
+			return msg + "\n\t:) WOW! :)\n " + movingPlayer.getName() + " YOU WIN! :)\n";
 		}
 
 //		handle special boxes
 		switch (BoxType.getBoxType(newPosition)) {
 		case BRIDGE:
-			msg += "\n\tWOW!\n " + playerWithDice.getName() + " You happened upon the bridge!\n";
-			msg += movePlayer(playerWithDice, BRIDGE_JUMP_POSITION - newPosition);
+			msg += "\n\tWOW!\n " + movingPlayer.getName() + " You happened upon the bridge!\n";
+			msg += movePlayer(movingPlayer, BRIDGE_JUMP_POSITION - newPosition);
 			break;
 		case GOOSE:
-			msg += "\n\tWOW!\n " + playerWithDice.getName() + " You catch a goose!\n";
-			msg += movePlayer(playerWithDice, newPosition - playerWithDice.getPreviousPosition());
+			msg += "\n\tWOW!\n " + movingPlayer.getName() + " You catch a goose!\n";
+			msg += movePlayer(movingPlayer, newPosition - movingPlayer.getPreviousPosition());
 			break;
 
 		default:
@@ -136,13 +136,13 @@ public class Board {
 
 		Player oldPlayerInPosition = boxes[newPosition];
 		if (newPosition != 0) {
-			boxes[newPosition] = playerWithDice;
+			boxes[newPosition] = movingPlayer;
 		}
 
 //		handle the "joke" - position already occupied
 		if (oldPlayerInPosition != null) {
 			msg += "\n\tATTENTION!\n" + oldPlayerInPosition.getName() + " falls in the joke!\n";
-			int joke = newPosition - playerWithDice.getPreviousPosition();
+			int joke = newPosition - movingPlayer.getPreviousPosition();
 			int jokePosition = oldPlayerInPosition.getPosition() - score;
 
 //			handle the "joke" - SPECIAL position already occupied

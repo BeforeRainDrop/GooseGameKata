@@ -7,8 +7,11 @@ package cimillo.kata.goosegame;
  */
 public class Player {
 
-	private String name;
+	static String positionsDescription(Player subject, int previousPosition, int newPosition) {
+		return "\n* " + subject.getName() + " * moves from " + previousPosition + " to " + newPosition + " on the board!";
+	}
 
+	private String name;
 	private int position = 0;
 	private int previousPosition;
 
@@ -41,8 +44,7 @@ public class Player {
 	}
 
 	String playerStateDescription() {
-		return "\n* " + this.getName() + " * moves from " + this.getPreviousPosition() + " to " + this.getPosition()
-				+ " on the board!";
+		return positionsDescription(this, this.getPreviousPosition(), this.getPosition());
 	}
 
 	public void setName(String name) {
