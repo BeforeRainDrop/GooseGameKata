@@ -23,6 +23,11 @@ go in the directory where the src directory is located and execute the instructi
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Running this configuration You can view the game in action.
 
+https://api.codiga.io/project/30486/score/svg
+
+
+https://api.codiga.io/project/30486/status/svg
+
 
 
 
