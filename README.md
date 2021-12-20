@@ -23,11 +23,15 @@ go in the directory where the src directory is located and execute the instructi
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Running this configuration You can view the game in action.
 
-<img src="https://api.codiga.io/project/30486/score/svg">
-<br>
-<br>
-<br>
-<img src="https://api.codiga.io/project/30486/status/svg">
+
+<div class="row">
+  <div class="column" style="width:40%; float:left;">
+   <img src="https://api.codiga.io/project/30486/score/svg">
+  </div>
+  <div class="column" style="float:left;">
+    <img src="https://api.codiga.io/project/30486/status/svg">
+  </div>
+</div>
 
 
 
